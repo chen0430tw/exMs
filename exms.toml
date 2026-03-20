@@ -1,0 +1,21 @@
+[system]
+name = "exMs"
+version = "0.1.0"
+host = "NT/PE"
+guest_linux_abi = true
+
+[layout]
+root = "/exms"
+system_dir = "/exms/system"
+apps_dir = "/exms/apps"
+lib_dir = "/exms/lib"
+pkgs_dir = "/exms/pkgs"
+state_dir = "/exms/state"
+registry_dir = "/exms/registry"
+runtime_dir = "/exms/runtime"
+
+[pfc]
+rescue_interval = 4
+rescue_quota = 3
+main_ttl = 5
+cooldown = 1

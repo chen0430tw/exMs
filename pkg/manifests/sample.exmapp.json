@@ -1,0 +1,14 @@
+{
+  "format": ".exmapp",
+  "app_id": "demo.echo",
+  "version": "0.1.0",
+  "entry": "bin/demo_echo",
+  "permissions": [
+    "CAP_FAST_EVENT"
+  ],
+  "default_group": "apps",
+  "default_domain": "app-main",
+  "dll_dependencies": [
+    "libdemo.exmdll"
+  ]
+}

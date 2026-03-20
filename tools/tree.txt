@@ -1,0 +1,10 @@
+exMs_Skeleton/
+  boot/
+  core/
+  runtime/
+  compat/
+  pkg/
+  apps/
+  tools/
+  tests/
+  docs/

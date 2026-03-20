@@ -1,0 +1,11 @@
+{
+  "format": ".exmdll",
+  "module_id": "libdemo.exmdll",
+  "abi_version": "0.1",
+  "exports": [
+    "demo_init",
+    "demo_run"
+  ],
+  "permissions": [],
+  "dependencies": []
+}

@@ -1,0 +1,9 @@
+{
+  "format": ".exmsys",
+  "component_id": "expdmf.core",
+  "version": "0.1.0",
+  "boot_phase": "core",
+  "privilege_domain": "sys-fast",
+  "persistent_service": true,
+  "dependencies": []
+}
