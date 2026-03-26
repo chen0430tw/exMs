@@ -134,4 +134,85 @@ ElfLoadResult load_static_elf(const std::string& path) {
     return result;
 }
 
+void ElfImagePlan::calculate_layout() {
+    if (segments.empty()) {
+        return;
+    }
+
+    // Find minimum and maximum virtual addresses
+    min_vaddr = UINT64_MAX;
+    max_vaddr = 0;
+
+    for (const auto& seg : segments) {
+        if (seg.vaddr < min_vaddr) {
+            min_vaddr = seg.vaddr;
+        }
+        uint64_t seg_end = seg.vaddr + seg.size;
+        if (seg_end > max_vaddr) {
+            max_vaddr = seg_end;
+        }
+    }
+
+    // Align min_vaddr down to page boundary (4KB)
+    constexpr uint64_t PAGE_SIZE = 0x1000;
+    min_vaddr = min_vaddr & ~(PAGE_SIZE - 1);
+
+    // Align max_vaddr up to page boundary
+    max_vaddr = (max_vaddr + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
+
+    // Calculate base address (we'll use the ELF's vaddr directly)
+    base_addr = min_vaddr;
+    total_size = max_vaddr - min_vaddr;
+}
+
+ElfImagePlan construct_image(const ElfLoadResult& parsed) {
+    ElfImagePlan plan{};
+
+    if (!parsed.ok) {
+        plan.message = "Cannot construct image from failed parse: " + parsed.message;
+        return plan;
+    }
+
+    if (parsed.program_headers.empty()) {
+        plan.message = "No PT_LOAD segments found";
+        return plan;
+    }
+
+    // Convert program headers to image segments
+    for (const auto& ph : parsed.program_headers) {
+        ImageSegment seg{};
+        seg.vaddr = ph.vaddr;
+        seg.size = ph.memsz;
+        seg.file_offset = ph.offset;
+        seg.file_size = ph.filesz;
+        seg.prot = ph.flags;
+        seg.align = ph.align;
+        plan.segments.push_back(seg);
+    }
+
+    // Calculate layout
+    plan.calculate_layout();
+
+    // Set entry point
+    plan.entry_point = parsed.entry;
+
+    plan.ok = true;
+    plan.message = "Image plan constructed successfully";
+    return plan;
+}
+
+uint64_t load_image_to_memory(const std::string& path, const ElfImagePlan& plan) {
+    if (!plan.ok) {
+        return 0;
+    }
+
+    std::ifstream in(path, std::ios::binary);
+    if (!in) {
+        return 0;
+    }
+
+    // For now, return the base address (actual memory mapping will be done by PDMF)
+    return plan.base_addr;
+}
+
 } // namespace exms::compat::linux::elf

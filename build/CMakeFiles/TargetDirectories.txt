@@ -1,0 +1,7 @@
+C:/Users/Administrator/exMs/build/CMakeFiles/exms_runtime.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/demo_echo.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/exboot_demo.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/stress_test.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/elf_test.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/edit_cache.dir
+C:/Users/Administrator/exMs/build/CMakeFiles/rebuild_cache.dir
