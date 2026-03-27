@@ -42,10 +42,10 @@ echo [3/3] elf_test.exe
 X:\exms\elf_test.exe
 echo.
 echo ========================================
-echo   Tests done! Rebooting in 30s...
+echo   Tests done! Shutting down in 30s...
 echo ========================================
 ping -n 31 127.0.0.1 > nul
-wpeutil reboot
+wpeutil shutdown
 """
 
 print("=" * 60)
@@ -65,7 +65,7 @@ if mount_dir.exists():
 WORK_DIR.mkdir(exist_ok=True)
 
 # 准备vars
-VARS_COPY.write_bytes(b"\x00" * (512 * 1024))
+VARS_COPY.write_bytes(b"\x00" * (528 * 1024))  # 4MB total - 3.5MB code = 528KB vars
 print(f"[OK] OVMF vars 准备完成")
 
 # 挂载DKTM的boot.wim
@@ -155,12 +155,13 @@ print("[*] 启动 QEMU...")
 cmd = [
     QEMU_EXE,
     "-machine", "q35",
-    "-cpu", "qemu64",
+    "-accel", "whpx",
+    "-cpu", "host",
     "-m", "1G",
     "-smp", "2",
     "-drive", f"if=pflash,format=raw,readonly=on,file={OVMF_CODE}",
     "-drive", f"if=pflash,format=raw,file={VARS_COPY}",
-    "-drive", f"file={iso_path},media=cdrom,readonly=on",
+    "-drive", f"file={iso_path},media=cdrom,readonly=on,if=ide",
     "-vga", "std",
     "-chardev", f"file,id=ser0,path={SERIAL_LOG}",
     "-serial", "chardev:ser0",

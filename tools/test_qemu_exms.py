@@ -25,7 +25,7 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 
 QEMU_EXE   = r"C:\Program Files\qemu\qemu-system-x86_64.exe"
 OVMF_CODE  = r"C:\Program Files\qemu\share\edk2-x86_64-code.fd"
-OVMF_VARS_SIZE = 512 * 1024
+OVMF_VARS_SIZE = 528 * 1024  # 4MB total - 3.5MB code = 528KB vars
 
 WORK_DIR   = Path(r"C:\exMs_temp_qemu")
 ISO_PATH   = WORK_DIR / "exMs_test.iso"
@@ -84,8 +84,8 @@ echo ========================================
 echo.
 echo Pausing for 30 seconds...
 ping -n 31 127.0.0.1 > nul
-echo Rebooting...
-wpeutil reboot
+echo Shutting down...
+wpeutil shutdown
 """
 
 # ── 检查 ──────────────────────────────────────────────────────────────────────
@@ -234,13 +234,13 @@ def build_cmd(iso: Path, vars_fd: Path) -> list:
     return [
         QEMU_EXE,
         "-machine", "q35",
-        "-cpu",     "qemu64",
+        "-accel",   "whpx",
+        "-cpu",     "host",
         "-m",       "1G",
         "-smp",     "2",
         "-drive",   f"if=pflash,format=raw,readonly=on,file={OVMF_CODE}",
         "-drive",   f"if=pflash,format=raw,file={vars_fd}",
-        "-cdrom",   str(iso),  # 用-cdrom而不是-drive
-        "-boot",    "d",       # 从CDROM启动
+        "-drive",   f"file={iso},media=cdrom,readonly=on,if=ide",  # WinPE ISO → IDE CDROM
         "-vga",     "std",
         "-chardev", f"file,id=ser0,path={SERIAL_LOG}",
         "-serial",  "chardev:ser0",
